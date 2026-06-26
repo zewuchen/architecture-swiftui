@@ -33,6 +33,7 @@ final class FeatureViewModel: ObservableObject {
     private let repository: FeatureRepositoryType
     private let analyticsManager: AnalyticsManagerType
     private let observabilityManager: ObservabilityManagerType
+    private let router: Router<FeatureAction>
 
     @Published
     var state: FeatureViewState = .loading
@@ -40,17 +41,15 @@ final class FeatureViewModel: ObservableObject {
     @Published
     var data: [FeatureViewDTO] = []
 
-    // Callback de navegação gerenciado pelo Coordinator
-    var onNavigate: ((FeatureAction) -> Void)?
-
     // MARK: - Internal functions
     init(repository: FeatureRepositoryType,
          analyticsManager: AnalyticsManagerType,
-         observabilityManager: ObservabilityManagerType
-    ) {
+         observabilityManager: ObservabilityManagerType,
+         router: Router<FeatureAction>) {
         self.repository = repository
         self.analyticsManager = analyticsManager
         self.observabilityManager = observabilityManager
+        self.router = router
     }
 
     // MARK: - Private functions
@@ -94,7 +93,7 @@ extension FeatureViewModel: FeatureViewModelType {
         }
 
         let item = data[index]
-        onNavigate?(item.action)
+        router.navigate(to: item.action)
     }
 }
 
