@@ -1,11 +1,6 @@
 import Foundation
 //import Network
 
-// Função do SDK da network
-protocol NetworkInterface {
-    func request<T: Decodable>(responseType: T.Type, _ service: NetworkServiceInterface) async throws -> T
-}
-
 protocol FeatureRepositoryType {
     func getList() async throws -> [FeatureResponse]
 }

@@ -2,6 +2,7 @@ import SwiftUI
 
 /// View coordenadora que gerencia navegação.
 /// ContentView não conhece NavigationStack nem rotas.
+/// Responsável por gerenciar a transição de telas de uma mesma feature. Várias pastas SomeFeature OU um novo fluxo chamando outro Coordinator
 struct FeatureCoordinator: View {
     @ObservedObject var router: Router<FeatureAction>
 
@@ -21,7 +22,7 @@ struct FeatureCoordinator: View {
 
     var body: some View {
         NavigationStack {
-            ContentView(viewModel: FeatureViewModel(repository: repository,
+            FeatureView(viewModel: FeatureViewModel(repository: repository,
                                                     analyticsManager: analyticsManager,
                                                     observabilityManager: observabilityManager,
                                                     router: router))

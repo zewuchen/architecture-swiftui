@@ -6,8 +6,15 @@
 	objectVersion = 90;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		8C833AB92FEF3CC900808ED8 /* Router.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C833AAD2FEF3CC900808ED8 /* Router.swift */; };
+		8C833AC92FEF46F800808ED8 /* Main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C833AC82FEF46F800808ED8 /* Main.swift */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		000000000000000000000120 /* Architecture.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Architecture.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8C833AAD2FEF3CC900808ED8 /* Router.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Router.swift; sourceTree = "<group>"; };
+		8C833AC82FEF46F800808ED8 /* Main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Main.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -31,6 +38,8 @@
 			isa = PBXGroup;
 			children = (
 				000000000000000000000010 /* Architecture */,
+				8C833AC82FEF46F800808ED8 /* Main.swift */,
+				8C833AAD2FEF3CC900808ED8 /* Router.swift */,
 				000000000000000000000020 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -110,6 +119,8 @@
 		000000000000000120000000 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			files = (
+				8C833AC92FEF46F800808ED8 /* Main.swift in Sources */,
+				8C833AB92FEF3CC900808ED8 /* Router.swift in Sources */,
 			);
 		};
 /* End PBXSourcesBuildPhase section */

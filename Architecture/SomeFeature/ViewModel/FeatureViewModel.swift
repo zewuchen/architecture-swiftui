@@ -3,16 +3,6 @@ import Combine
 // import Analytics
 // import Observability
 
-// Função de analytics do SDK
-protocol AnalyticsManagerType {
-    func track(event: String, parameters: [String: Any])
-}
-
-// Função de observability do SDK
-protocol ObservabilityManagerType {
-    func log(message: String)
-}
-
 protocol FeatureViewModelType: AnyObject {
     var state: FeatureViewState { get set }
     var data: [FeatureViewDTO] { get set }
