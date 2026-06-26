@@ -2,8 +2,10 @@ import SwiftUI
 
 struct NetworkMock: NetworkInterface {
     func request<T: Decodable>(responseType: T.Type, _ service: NetworkServiceInterface) async throws -> T {
+        try await Task.sleep(nanoseconds: 2_000_000_000)
+
         if responseType == [FeatureResponse].self {
-            return [
+            return await [
                 FeatureResponse(title: "Item 1", subtitle: "Descrição do Item 1", iconName: "star"),
                 FeatureResponse(title: "Item 2", subtitle: "Descrição do Item 2", iconName: "heart")
             ] as! T
@@ -51,41 +53,49 @@ struct MyApp: App {
                 router: router,
                 repository: Self.repository,
                 analyticsManager: Self.analytics,
-                observabilityManager: Self.observability,
-                viewModel: viewModel
+                observabilityManager: Self.observability
             )
         }
     }
 }
 
-private typealias FeatureViewModelType = ObservableObject & FeatureViewModel & FeatureViewModelAnalyticsType & FeatureViewModelObservability
+typealias FeatureViewModelComposite = ObservableObject &
+                                      FeatureViewModelType &
+                                      FeatureViewModelAnalytics &
+                                      FeatureViewModelObservability
 
-struct ContentView: View {
-    @StateObject var viewModel: FeatureViewModel
+// TODO: Remover generics
+struct ContentView<VM: FeatureViewModelComposite>: View {
+    @StateObject var viewModel: VM
 
-    init(viewModel: @autoclosure @escaping () -> FeatureViewModel) {
+    init(viewModel: @autoclosure @escaping () -> VM) {
         self._viewModel = StateObject(wrappedValue: viewModel())
     }
 
-    var body: some View {
-        Group {
-            switch viewModel.state {
-            case .loading:
-                Text("Loading")
-            case .ready:
-                List(viewModel.data.indices, id: \.self) { index in
-                    Text(viewModel.data[index].title)
-                        .onTapGesture {
+    @ViewBuilder
+    private var content: some View {
+        switch viewModel.state {
+        case .loading:
+            Text("Loading")
+        case .ready:
+            List(viewModel.data, id: \.self) { item in
+                Text(item.title)
+                    .onTapGesture {
+                        if let index = viewModel.data.firstIndex(of: item) {
                             viewModel.showItem(for: index)
                         }
-                }
-            case .error:
-                Text("Erro ao carregar")
+                    }
             }
+        case .error:
+            Text("Erro ao carregar")
         }
-        .task {
-            await viewModel.loadData()
-        }
+    }
+
+    var body: some View {
+        content
+            .task {
+                await viewModel.loadData()
+            }
     }
 }
 

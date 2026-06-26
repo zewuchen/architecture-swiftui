@@ -6,7 +6,7 @@ enum FeatureAnalyticsEvents: Equatable {
     case tapItem(title: String)
 }
 
-extension FeatureAnalyticsEvents: AnalyticsEventType {
+extension FeatureAnalyticsEvents {
     func parameters() -> [String: Any]? {
         switch self {
         case .screenView:

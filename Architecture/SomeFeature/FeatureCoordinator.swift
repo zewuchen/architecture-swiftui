@@ -4,7 +4,6 @@ import SwiftUI
 /// ContentView não conhece NavigationStack nem rotas.
 struct FeatureCoordinator: View {
     @ObservedObject var router: Router<FeatureAction>
-    @ObservedObject var viewModel: FeatureViewModel
 
     private let repository: FeatureRepositoryType
     private let analyticsManager: AnalyticsManagerType
@@ -13,18 +12,19 @@ struct FeatureCoordinator: View {
     init(router: Router<FeatureAction>,
          repository: FeatureRepositoryType,
          analyticsManager: AnalyticsManagerType,
-         observabilityManager: ObservabilityManagerType,
-         viewModel: FeatureViewModel) {
+         observabilityManager: ObservabilityManagerType) {
         self.router = router
         self.repository = repository
         self.analyticsManager = analyticsManager
         self.observabilityManager = observabilityManager
-        self.viewModel = viewModel
     }
 
     var body: some View {
         NavigationStack {
-            ContentView(viewModel: viewModel)
+            ContentView(viewModel: FeatureViewModel(repository: repository,
+                                                    analyticsManager: analyticsManager,
+                                                    observabilityManager: observabilityManager,
+                                                    router: router))
                 .navigationDestination(item: $router.route) { action in
                     destinationView(for: action)
                 }
@@ -35,17 +35,21 @@ struct FeatureCoordinator: View {
     private func destinationView(for action: FeatureAction) -> some View {
         switch action {
         case .openScreen1:
-            let viewModel = FeatureViewModel1(repository: repository,
-                                              analyticsManager: analyticsManager,
-                                              observabilityManager: observabilityManager,
-                                              router: router)
-            ScreenView1(viewModel: viewModel)
+            // Não instanciar em uma variavel, as Views utilizarão @autoclousure e o compilador entenderá de forma diferente
+            // let viewModel = FeatureViewModel1(repository: repository,
+            //                                   analyticsManager: analyticsManager,
+            //                                   observabilityManager: observabilityManager,
+            //                                   router: router)
+            // ScreenView1(viewModel: viewModel)
+            Text("Screen 1") // Dummy code to compile
         case .openScreen2:
-            let viewModel = FeatureViewModel2(repository: repository,
-                                              analyticsManager: analyticsManager,
-                                              observabilityManager: observabilityManager,
-                                              router: router)
-            ScreenView2(viewModel: viewModel)
+            // Modo certo
+            // let viewModel = FeatureViewModel2(repository: repository,
+            //                                   analyticsManager: analyticsManager,
+            //                                   observabilityManager: observabilityManager,
+            //                                   router: router)
+            // ScreenView2(viewModel: viewModel)
+            Text("Screen 2") // Dummy code to compile
         }
     }
 }

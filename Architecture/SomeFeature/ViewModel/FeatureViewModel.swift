@@ -1,4 +1,5 @@
 import Foundation
+import Combine
 // import Analytics
 // import Observability
 
@@ -13,11 +14,14 @@ protocol ObservabilityManagerType {
 }
 
 protocol FeatureViewModelType: AnyObject {
+    var state: FeatureViewState { get set }
+    var data: [FeatureViewDTO] { get set }
+
     func loadData() async
     func showItem(for index: Int)
 }
 
-protocol FeatureViewModelAnalyticsType: AnyObject {
+protocol FeatureViewModelAnalytics: AnyObject {
     func trackScreenView()
     func trackClickItem(title: String)
 }
@@ -97,8 +101,8 @@ extension FeatureViewModel: FeatureViewModelType {
     }
 }
 
-// MARK: - FeatureViewModelAnalyticsType
-extension FeatureViewModel: FeatureViewModelAnalyticsType {
+// MARK: - FeatureViewModelAnalytics
+extension FeatureViewModel: FeatureViewModelAnalytics {
     func trackScreenView() {
         analyticsManager.track(event: "screen_view", parameters: FeatureAnalyticsEvents.screenView.parameters() ?? [:])
     }

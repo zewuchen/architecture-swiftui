@@ -11,10 +11,10 @@ enum HttpMethod: String {
 }
 
 protocol NetworkServiceInterface {
-    var path: String
-    var method: HttpMethod
-    var headerParams: Encodable?
-    var body: Encodable?
+    var path: String { get set }
+    var method: HttpMethod { get set }
+    var headerParams: Encodable? { get set }
+    var body: Encodable? { get set }
 }
 
 // Exemplo de estrutura de requisição por endpoint / serviço
