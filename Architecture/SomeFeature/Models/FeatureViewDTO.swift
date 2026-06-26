@@ -6,4 +6,5 @@ struct FeatureViewDTO: Equatable {
     let description: String
     let hasBorder: Bool
     let iconName: String
+    let action: FeatureAction
 }

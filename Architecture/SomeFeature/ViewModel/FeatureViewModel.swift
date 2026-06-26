@@ -13,7 +13,7 @@ protocol ObservabilityManagerType {
 }
 
 protocol FeatureViewModelType: AnyObject {
-    func loadData()
+    func loadData() async
     func showItem(for index: Int)
 }
 
@@ -27,11 +27,9 @@ protocol FeatureViewModelObservability: AnyObject {
 }
 
 // Classe responsável pela regra de negócio e atualização da view
-@ObservableObject
-final class FeatureViewModel {
+final class FeatureViewModel: ObservableObject {
 
     // MARK: - Private properties
-    private lazy var viewData: [FeatureViewDTO] = []
     private let repository: FeatureRepositoryType
     private let analyticsManager: AnalyticsManagerType
     private let observabilityManager: ObservabilityManagerType
@@ -42,33 +40,33 @@ final class FeatureViewModel {
     @Published
     var data: [FeatureViewDTO] = []
 
-    @Binding
-    private var route: FeatureAction?
+    // Callback de navegação gerenciado pelo Coordinator
+    var onNavigate: ((FeatureAction) -> Void)?
 
     // MARK: - Internal functions
     init(repository: FeatureRepositoryType,
          analyticsManager: AnalyticsManagerType,
-         observabilityManager: ObservabilityManagerType,
-         route: Binding<FeatureAction?>
+         observabilityManager: ObservabilityManagerType
     ) {
         self.repository = repository
         self.analyticsManager = analyticsManager
         self.observabilityManager = observabilityManager
-        self._route = route
     }
 
     // MARK: - Private functions
     private func handleSuccessRequest(response: [FeatureResponse]) {
         data = response.enumerated().compactMap { index, item in
-            var title = item.title
-            var description = item.subtitle
-            var hasBorder = index == 0
-            var iconName = item.iconName
+            let title = item.title
+            let description = item.subtitle
+            let hasBorder = index == 0
+            let iconName = item.iconName
+            let action: FeatureAction = (index % 2 == 0) ? .openScreen1 : .openScreen2
 
             return FeatureViewDTO(title: title,
                                   description: description,
                                   hasBorder: hasBorder,
-                                  iconName: iconName)
+                                  iconName: iconName,
+                                  action: action)
         }
 
         state = .ready
@@ -89,31 +87,25 @@ extension FeatureViewModel: FeatureViewModelType {
     }
 
     func showItem(for index: Int) {
-        guard
-            let item = viewData[safe: index]
-        else {
+        guard index >= 0 && index < data.count else {
             state = .error
             log(message: "Error to find item at index: \(index)")
             return
         }
 
-        switch item.type {
-        case .openScreen1:
-            route = .openScreen1
-        case .openScreen2:
-            route = .openScreen2
-        }
+        let item = data[index]
+        onNavigate?(item.action)
     }
 }
 
 // MARK: - FeatureViewModelAnalyticsType
 extension FeatureViewModel: FeatureViewModelAnalyticsType {
     func trackScreenView() {
-        analyticsManager.track(event: "screen_view", parameters: FeatureAnalyticsEvents.screenView.parameters())
+        analyticsManager.track(event: "screen_view", parameters: FeatureAnalyticsEvents.screenView.parameters() ?? [:])
     }
 
     func trackClickItem(title: String) {
-        analyticsManager.track(event: "click", parameters: FeatureAnalyticsEvents.tapItem(title: title).parameters())
+        analyticsManager.track(event: "click", parameters: FeatureAnalyticsEvents.tapItem(title: title).parameters() ?? [:])
     }
 }
 

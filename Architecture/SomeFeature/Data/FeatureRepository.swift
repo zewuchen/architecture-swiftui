@@ -3,7 +3,7 @@ import Foundation
 
 // Função do SDK da network
 protocol NetworkInterface {
-    func request<T: Decodable>(responseType: T.Type, _ service: NetworkServiceInterface) async throws -> T.Type
+    func request<T: Decodable>(responseType: T.Type, _ service: NetworkServiceInterface) async throws -> T
 }
 
 protocol FeatureRepositoryType {
@@ -19,10 +19,10 @@ final class FeatureRepository {
 }
 
 extension FeatureRepository: FeatureRepositoryType {
-    func getList() async throws -> [FeatureResponse.self] {
+    func getList() async throws -> [FeatureResponse] {
         let service = FeatureService()
 
-        return await network.request(responseType: [FeatureResponse].self,
-                                     service)
+        return try await network.request(responseType: [FeatureResponse].self,
+                                         service)
     }
 }
