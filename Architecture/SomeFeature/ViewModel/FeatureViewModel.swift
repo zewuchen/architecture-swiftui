@@ -12,7 +12,7 @@ protocol FeatureViewModelType: AnyObject {
 }
 
 protocol FeatureViewModelAnalytics: AnyObject {
-    func trackScreenView()
+    func trackScreenView() async
     func trackClickItem(title: String)
 }
 
@@ -27,7 +27,7 @@ final class FeatureViewModel: ObservableObject {
     private let repository: FeatureRepositoryType
     private let analyticsManager: AnalyticsManagerType
     private let observabilityManager: ObservabilityManagerType
-    private let router: Router<FeatureAction>
+    private let router: any RouterProtocol<FeatureAction>
 
     @Published
     var state: FeatureViewState = .loading
@@ -39,7 +39,7 @@ final class FeatureViewModel: ObservableObject {
     init(repository: FeatureRepositoryType,
          analyticsManager: AnalyticsManagerType,
          observabilityManager: ObservabilityManagerType,
-         router: Router<FeatureAction>) {
+         router: any RouterProtocol<FeatureAction>) {
         self.repository = repository
         self.analyticsManager = analyticsManager
         self.observabilityManager = observabilityManager
@@ -68,6 +68,7 @@ final class FeatureViewModel: ObservableObject {
 
 // MARK: - FeatureViewModelType
 extension FeatureViewModel: FeatureViewModelType {
+    @MainActor
     func loadData() async {
         state = .loading
         do {

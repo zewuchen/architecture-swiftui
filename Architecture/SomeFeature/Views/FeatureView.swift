@@ -23,6 +23,7 @@ struct FeatureView<VM: FeatureViewModelComposite>: View {
                     .onTapGesture {
                         if let index = viewModel.data.firstIndex(of: item) {
                             viewModel.showItem(for: index)
+                            viewModel.trackClickItem(title: item.title)
                         }
                     }
             }

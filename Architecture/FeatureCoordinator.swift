@@ -4,31 +4,32 @@ import SwiftUI
 /// ContentView não conhece NavigationStack nem rotas.
 /// Responsável por gerenciar a transição de telas de uma mesma feature. Várias pastas SomeFeature OU um novo fluxo chamando outro Coordinator
 struct FeatureCoordinator: View {
-    @ObservedObject var router: Router<FeatureAction>
+    @StateObject
+    private var router: Router<FeatureAction>
 
     private let repository: FeatureRepositoryType
     private let analyticsManager: AnalyticsManagerType
     private let observabilityManager: ObservabilityManagerType
 
-    init(router: Router<FeatureAction>,
-         repository: FeatureRepositoryType,
+    init(repository: FeatureRepositoryType,
          analyticsManager: AnalyticsManagerType,
-         observabilityManager: ObservabilityManagerType) {
-        self.router = router
+         observabilityManager: ObservabilityManagerType,
+         router: @autoclousure @escaping () -> Router<FeatureAction>) {
         self.repository = repository
         self.analyticsManager = analyticsManager
         self.observabilityManager = observabilityManager
+        self._router = StateObject(wrappedValue: router())
     }
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $router.path) {
             FeatureView(viewModel: FeatureViewModel(repository: repository,
                                                     analyticsManager: analyticsManager,
                                                     observabilityManager: observabilityManager,
                                                     router: router))
-                .navigationDestination(item: $router.route) { action in
+            .navigationDestination(for: FeatureAction.self) { action in
                     destinationView(for: action)
-                }
+            }
         }
     }
 
